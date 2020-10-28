@@ -42,4 +42,38 @@ Steps to adding action/reducer pair:
 
 Note: all variables will be passed down as a prop, make sure you add {...this.props} to children components who need access to the object.
 
+export function searchProgram(search){
+  return async dispatch => {
+    async function onSuccess(success){
+      let results = await success.json();
+      dispatch({
+        type: 'SET_SEARCH',
+        search: results
+      });
+      dispatch({
+        type: 'SET_SEARCH_FLAG',
+        searchFlag: true
+      });
+      return {payload: results}
+    }
+    function onError(error){
+      dispatch({
+        type: 'SERVER_ERROR',
+      })
+    }
+    try {
+      const res = await fetch(`${config.API_BASE}${config.ENDPOINTS["search_program"]}`, {
+        method: 'POST',
+        headers:{
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({query: search})
+      });
+      return onSuccess(res);
+    }catch(err){
+      return onError(err);
+    }
+  }
+}
+
 */
